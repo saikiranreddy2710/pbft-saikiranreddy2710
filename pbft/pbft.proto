@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+option go_package =  "./pbft";
+
+message broadcast {
+  oneof msg {
+    PrePrepareRequest prePrepareBroadcast = 1;
+    PrepareRequest preparebroadcast = 2;
+    commitRequest commitbroadcast = 3;
+    viewchange viewchangebroadcast = 4;
+    newview newviewbroadcast = 5;
+}
+}
+
+
+message Response {
+  string message = 1;
+}
+
+
+
+message PrePrepareRequest {
+  int64 Viewid = 1;
+  int64 sequencenumber = 2;
+  string Digest = 3;
+  string serversign = 4;
+  int64 serverid = 5;
+  repeated Transaction transaction = 6;
+}
+
+message PrePrepareResponse {
+  int64 sequencenumber = 1;
+  int64 serverid = 2;
+  bool  accepted = 3;
+  string reason = 4;
+  string digest = 5;
+  int64 viewid = 6;
+
+}
+
+message PrepareRequest {
+  int64 viewid = 1;
+  int64 sequencenumber = 2;
+  string Digest = 3;
+  int64 serversign = 4;
+  int64 serverid = 5;
+}
+
+message Prepared {
+  int64 sequencenumber = 1;
+  int64 serverid = 2;
+  bool accepted = 3;
+  string reason = 4;
+  string digest = 5;
+  int64 viewid = 6;
+
+}
+
+message commitRequest {
+  int64 viewid = 1;
+  int64 sequencenumber = 2;
+  string Digest = 3;
+  int64 serverid = 4;
+  repeated Transaction transaction = 5;
+}
+
+
+message Transaction {
+  string sender = 1;
+  string receiver = 2;
+  int64 amount = 3;
+  int64 timestamp = 4;
+  string sign = 5;
+  int64 sequencenumber = 6;
+  string digest = 7;
+  int64 viewid = 8;
+  string status = 9;
+}
+
+message commit {
+  int64 viewid = 1;
+  int64 sequencenumber = 2;
+  string Digest = 3;
+  int64 serverid = 4;
+  repeated Transaction transaction = 5;
+}
+message balrequest {
+  int64 clienid = 1;
+  int64 serverid = 2;
+}
+message balresponse {
+  int64 balance = 1;
+  int64 clienid = 2;
+  int64 serverid = 3;
+}
+
+message Reply {
+  string response = 1;
+  int64 viewid = 2;
+  int64 timestamp = 3;
+  int64 serverid = 4;
+  int64 sequencenumber = 5;
+  string  clientid = 6;
+  Transaction transaction = 7;
+  
+}
+message transactionRequest {
+    string type = 1;                   
+    int64 viewid = 2;                  
+    int64 sequencenumber = 3;          
+    string digest = 4;                 
+    bytes sign = 5;
+    repeated Transaction transaction = 6;
+    int64 timestamp = 7;
+
+}
+
+message transactionResponse {
+  string response = 1;
+
+}
+
+
+message viewchange {
+  int64 newviewid = 1;
+  int64 lastcpseq = 2;
+  int64 serverid = 3;
+}
+message newview {
+  int64 newviewid = 1;
+  int64 lastcpseq = 2;
+  int64 serverid = 3;
+  repeated Transaction transaction = 4;
+}
+message statusrequest{
+  int64 Sequencenumber = 1;
+}
+// message BalanceRequest {
+//   string clientid = 1;
+//   string serverid = 2;
+// }
+// message BalanceResponse {
+//   int64 balance = 1;
+//   string clientid = 2;
+//   string serverid = 3;
+// }
+
+message BalanceRequest {
+	int64 serverid = 1;
+}
+
+message BalanceResponse {
+	map<string, int64> Balances = 1;
+}
+message statusRequest{
+  int64 sequencenumber = 1;
+}
+message statusReponse{
+  string status = 1;
+  int64 sequencenumber = 2;
+  int64 serverid = 3;
+
+  
+}
+message Empty {}
+
+
+service pbft {
+  rpc Broadcast(broadcast) returns (Response);
+
+  rpc PrePrepare(PrePrepareRequest) returns (PrePrepareResponse);
+  rpc Prepare(PrepareRequest) returns (Prepared);
+  rpc ProcessTransaction(transactionRequest) returns (Reply);
+  rpc Printdb (balrequest) returns (balresponse);
+  // rpc SendReply (statusrequest) returns ( Reply);
+  rpc SendReply(Reply) returns (Reply); 
+  rpc GetBalanceRequest(BalanceRequest) returns (BalanceResponse);
+  rpc TransactionStream(stream transactionRequest) returns (stream Reply);
+  rpc ReceiverNewView(newview) returns (Empty);
+  rpc GetStatus(statusrequest) returns (statusReponse);
+
+}
