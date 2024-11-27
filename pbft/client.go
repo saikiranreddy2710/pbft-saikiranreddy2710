@@ -46,7 +46,7 @@ type Sets struct {
 	ByzantineServers []string
 }
 
-// create 10 accounts now
+// create 10 accounts  now
 var account = []accounts{
 	{id: "A", balance: 10},
 	{id: "B", balance: 10},
