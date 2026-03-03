@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"pbft/utils"
+	"pbft/internal/utils"
 	"regexp"
 	"sort"
 	"strconv"
@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	pbft "pbft/pbft" // Update with the actual path to your pbft proto package
+	pbft "pbft/proto" // Update with the actual path to your pbft proto package
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -425,7 +425,7 @@ func main() {
 		"localhost:5006",
 		"localhost:5007",
 	}
-	sets, err := ParseCSV("pbft.csv")
+	sets, err := ParseCSV("data/pbft.csv")
 	if err != nil {
 		log.Fatalf("Error parsing CSV: %v", err)
 	}

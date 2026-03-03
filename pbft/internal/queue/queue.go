@@ -1,7 +1,7 @@
 package queue
 
 import (
-	"pbft/pbft"
+	"pbft/proto"
 	"sync"
 )
 
